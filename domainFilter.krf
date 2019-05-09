@@ -29,8 +29,12 @@
 ;     (isa ?predicate Predicate)))
 ; (<== (biologyDomain))
 
-(isa DFCollection Collection)
+;;; Hardcoded Biology Domain Relations
+(isa BiologyCollection Collection)
+(isa in-EmbeddedInFluidMatrix BiologyCollection)
 
+;;; All relations that belong to the results of the ~40 - 70 vcr results
+(isa DFCollection Collection)
 (isa objectSides DFCollection)
 (isa physicalParts DFCollection)
 (isa suspendedIn DFCollection)
