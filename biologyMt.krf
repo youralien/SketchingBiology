@@ -1,0 +1,6 @@
+(in-microtheory CustomBiologyMt)
+
+(isa BiologyCollection Collection)
+
+(isa in-EmbeddedInFluidMatrix BiologyCollection)
+; (isa in-EmbeddedInFluidMatrix Predicate)
