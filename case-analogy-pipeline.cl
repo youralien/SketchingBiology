@@ -19,6 +19,7 @@
   (setq subsketch (get-first-subsketch))
   (setq raw-facts (get-facts-from-subsketch subsketch))
   (setq sme-facts (apply-filter raw-facts))
+  sme-facts ; return!
   ; TODO: get conceptual relation oracle labels from the facts too
   ; TODO: use SME to find best matches
   ; TODO: transfer conceptual relations to target sketch
