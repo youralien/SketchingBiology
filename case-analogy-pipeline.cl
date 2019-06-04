@@ -17,7 +17,7 @@
 (defun run-target-pipeline ()
                                         ; TODO: get case case and target subsketch facts separately
   (setq subsketches (get-subsketches-from-current-sketch))
-  (setq subsketch (last subsketches)) ; grab the first one ordered in the GUI
+  (setq subsketch (first (last subsketches))) ; grab the first one ordered in the GUI
   (setq raw-facts (get-facts-from-subsketch subsketch))
   (setq sme-facts (apply-filter raw-facts))
   (store-as-case sme-facts 'CaseFactsNeuron1)
@@ -63,8 +63,9 @@
 
 
 (defun get-facts-from-subsketch (subsketch)
+  """ subsketch is a sketch object, not a listp "
   ; facts about the sketch are only accessible via that Layer-level, so we do the following to get there:
-  (setq subsketch-obj-name (cog::object-name (first subsketch)))
+  (setq subsketch-obj-name (cog::object-name subsketch))
   (setq layer-voronoi (cog::layers (first subsketch)))
   (setq layer1 (first layer-voronoi))
 
