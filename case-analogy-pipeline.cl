@@ -10,8 +10,8 @@
 ;;;; ---------------------------------------------------------------------------
 
 ;;; (in-package :cogsketch)
-;;; (in-package :cl-user)
-(in-package :cg-user)
+(in-package :cl-user)
+;(in-package :cg-user)
 ; NOTE: load cogsketch
 ; NOTE: load fire
 
@@ -31,7 +31,7 @@
 
 (defun run-train-pipeline ()
   """ building the case from N subsketches in an opened sk file """
-  (setq case-lib-name 'NeuronCaseLib)
+  (setq case-lib-name 'NeuronCaseLibrary)
   (setq subsketches (get-subsketches-from-current-sketch))
   (setq iterator 0)
   ; iterate from the back
