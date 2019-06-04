@@ -17,7 +17,7 @@
 (defun run-target-pipeline ()
                                         ; TODO: get case case and target subsketch facts separately
   (setq subsketches (get-subsketches-from-current-sketch))
-  (setq sketch (last subsketches)) ; grab the first one ordered in the GUI
+  (setq subsketch (last subsketches)) ; grab the first one ordered in the GUI
   (setq raw-facts (get-facts-from-subsketch subsketch))
   (setq sme-facts (apply-filter raw-facts))
   (store-as-case sme-facts 'CaseFactsNeuron1)
@@ -33,6 +33,7 @@
   (setq case-lib-name 'NeuronCaseLib)
   (setq subsketches (get-subsketches-from-current-sketch))
   (setq iterator 0)
+  ; iterate from the back
   (dolist (subsketch subsketches)
     (setq raw-facts (get-facts-from-subsketch subsketch))
     (setq sme-facts (apply-filter raw-facts))
@@ -113,7 +114,7 @@
       ((null lsts) filteredlst)))
 
 (defun store-as-case (sme-facts case-name)
-  (dolist (f facts)
+  (dolist (f sme-facts)
     (fire::kb-store f :mt case-name)))
 
 (defun add-case-to-library (case-name case-library-name)
