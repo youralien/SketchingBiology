@@ -14,27 +14,52 @@
 ; NOTE: load cogsketch
 ; NOTE: load fire
 
-(defun run-pipeline ()
-  ; TODO: get case case and target subsketch facts separately
-  (setq subsketch (get-first-subsketch))
+(defun run-target-pipeline ()
+                                        ; TODO: get case case and target subsketch facts separately
+  (setq subsketches (get-subsketches-from-current-sketch))
+  (setq sketch (last subsketches)) ; grab the first one ordered in the GUI
   (setq raw-facts (get-facts-from-subsketch subsketch))
   (setq sme-facts (apply-filter raw-facts))
-  sme-facts ; return!
+  (store-as-case sme-facts 'CaseFactsNeuron1)
+  (add-case-to-library 'CaseFactsNeuron1 'NeuronCaseLib)
+  sme-facts
+  ; TODO: get conceptual relation oracle labels from the facts too
+  ; TODO: use SME to find best matches
+  ; TODO: transfer conceptual relations to target sketch
+)
+
+(defun run-train-pipeline ()
+  """ building the case from N subsketches in an opened sk file """
+  (setq case-lib-name 'NeuronCaseLib)
+  (setq subsketches (get-subsketches-from-current-sketch))
+  (setq iterator 0)
+  (dolist (subsketch subsketches)
+    (setq raw-facts (get-facts-from-subsketch subsketch))
+    (setq sme-facts (apply-filter raw-facts))
+    (setq case-name (intern (concatenate 'string "CaseFactsNeuron" iterator)))
+    (store-as-case sme-facts case-name)
+    (add-case-to-library case-name case-lib-name)
+    (incf iterator))
+
   ; TODO: get conceptual relation oracle labels from the facts too
   ; TODO: use SME to find best matches
   ; TODO: transfer conceptual relations to target sketch
   )
 
-
-(defun get-first-subsketch()
-  """ TODO: construct cases from sk file """
-  ; grabs the current sketch from CogSketch
+(defun get-subsketches-from-current-sketch()
   (setq current-sketch (cog::sketches cog::*cogsketch-core*))
   (setq subsketches (cog::subsketches (first current-sketch)))
+  subsketches
+  )
+
+(defun get-first-subsketch(subsketches)
+  """ TODO: construct cases from sk file """
+  ; grabs the current sketch from CogSketch
   ; we choose to use the first subsketch (of the 10 for neuron, for example)
   (setq subsketch (last subsketches))
   subsketch
   )
+
 
 (defun get-facts-from-subsketch (subsketch)
   ; facts about the sketch are only accessible via that Layer-level, so we do the following to get there:
@@ -63,10 +88,21 @@
       (eql relation 'rcc8-NTPP)
       (eql relation 'rcc8-NTPPi)))
 
+(defun conceptualFacts-p (relation)
+  (or (eql relation 'inRegion)
+      (eql relation 'connectedAtEnd)
+      (eql relation 'connectedAlongSurface)
+      (eql relation 'surfaceParts)
+      (eql relation 'spiralsAround)
+      (eql relation 'mainFunctionalComponent)
+      ;; (eql relation ')
+      ))
+
 (defun SMEFacts-p (fact)
   (or (eql (car fact) 'hasRCC8Relation)
       (eql (car fact) 'isa)
-      (otherRCC8Facts (car fact))))
+      (otherRCC8Facts (car fact))
+      (conceptualFacts-p (car fact))))
 
 (defun apply-filter (facts)
   (do ((lsts facts (cdr lsts))
@@ -76,6 +112,12 @@
                             (t filteredlst))))
       ((null lsts) filteredlst)))
 
+(defun store-as-case (sme-facts case-name)
+  (dolist (f facts)
+    (fire::kb-store f :mt case-name)))
+
+(defun add-case-to-library (case-name case-library-name)
+  (fire::add-to-caseLib case-name case-library-name))
 #|
 (defun load-facts-from-text (path)
   (setq facts nil)
