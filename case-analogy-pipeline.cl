@@ -10,7 +10,8 @@
 ;;;; ---------------------------------------------------------------------------
 
 ;;; (in-package :cogsketch)
-(in-package :cl-user)
+;;; (in-package :cl-user)
+(in-package :cg-user)
 ; NOTE: load cogsketch
 ; NOTE: load fire
 
@@ -37,10 +38,13 @@
   (dolist (subsketch subsketches)
     (setq raw-facts (get-facts-from-subsketch subsketch))
     (setq sme-facts (apply-filter raw-facts))
-    (setq case-name (intern (concatenate 'string "CaseFactsNeuron" iterator)))
+    (setq case-name (intern (format nil "~a~a" "CaseFacts" iterator)))
     (store-as-case sme-facts case-name)
     (add-case-to-library case-name case-lib-name)
-    (incf iterator))
+    (incf iterator)
+    (pprint case-name)
+    )
+  
 
   ; TODO: get conceptual relation oracle labels from the facts too
   ; TODO: use SME to find best matches
@@ -66,8 +70,8 @@
   """ subsketch is a sketch object, not a listp "
   ; facts about the sketch are only accessible via that Layer-level, so we do the following to get there:
   (setq subsketch-obj-name (cog::object-name subsketch))
-  (setq layer-voronoi (cog::layers (first subsketch)))
-  (setq layer1 (first layer-voronoi))
+  ; (setq layer-voronoi (cog::layers (first subsketch)))
+  ; (setq layer1 (first layer-voronoi))
 
   ; find the facts we care about as triples of glyph, object, collection facts and put it in Working Memory (WM)
   (fire::ask-it '(and (glyphRepresentsObject ?glyph ?object) (isa ?object ?coll))
