@@ -57,17 +57,17 @@
 ;;
 (defun gather-visual-conceptual-relation-questions (subsketch-case reasoner)
   (fire:with-reasoner reasoner
-    (let ((suggestions
-           (compute-vcr-baseline-and-suggestions subsketch-case 
-                                                 :reasoner reasoner))
+    (let ((suggestions nil)
+          ; (compute-vcr-baseline-and-suggestions subsketch-case 
+          ;                                       :reasoner reasoner))
           ; (analogy-suggestions
           ;  (gather-analogical-vcr-suggestions subsketch-case reasoner))
-
+           
 
           ; FIXME!!! damage duty
           (analogy-suggestions
             (run-target-pipeline))
-
+          (format t "testies ~a" "ryan2")
           (accepted
            (fire:ask-it `(d::userAcceptsBinaryRelationSuggestion ?reln ?o1 ?o2)
              :context subsketch-case
@@ -77,6 +77,7 @@
              :response '(?reln ?o1 ?o2)
              :reasoner reasoner)))
       (pprint analogy-suggestions)
+      (format t "testies ~a" "ryan2")
       (sort-vcr-suggestions subsketch-case suggestions 
                             analogy-suggestions accepted))))
 
@@ -656,4 +657,3 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End of Code
-
