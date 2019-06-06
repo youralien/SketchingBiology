@@ -16,57 +16,61 @@
 ; NOTE: load fire
 
 (setq case-lib-name 'NeuronCaseLibrary)
+(setq probe-name 'NeuronProbeMt)
+(setq target-case-name 'TargetNeuronMt)
 
-(defun run-target-pipeline ()
-  
+(defun run-target-pipeline1 ()
   (setq subsketches (get-subsketches-from-current-sketch))
   (setq subsketch (first (last subsketches))) ; grab the first one ordered in the GUI
   (setq raw-facts (get-facts-from-subsketch subsketch))
   (setq sme-facts (apply-filter raw-facts))
-  
   ;;; target creation
-  (setq target-case-name 'TargetNeuronMt)
   (store-as-case sme-facts target-case-name)
   ;;; (add-case-to-library target-case-name 'NeuronCaseLibrary)
-  
-  
-  ;;; probe creation
-  (setq probe-name 'NeuronProbeMt)
-  
+  sme-facts)
+
+(defun run-target-pipeline2 (sme-facts)
   ;;; todo: use probe instead of case-name
   (setq retrieved-cases
-    (fire:ask-it `(d::reminding (d::KBCaseFn ,case-name)
-                                (d::CaseLibraryFn ,case-lib-name)
-                                (d::TheSet)
-                                ?case
-                                ?sme)
-      :response '(?case ?sme)))
-  
-  (format t "retrieved-cases: ~A" retrieved-cases)
+        (fire:ask-it `(d::reminding (d::KBCaseFn ,probe-name)
+                                    (d::CaseLibraryFn ,case-lib-name)
+                                    (d::TheSet)
+                                    ?case
+                                    ?sme)
+                     :response '(?case ?sme)))
+
+  retrieved-cases
+  )
+
+(defun run-target-pipeline3 (retrieved-cases)
   ;; todo (caar retrieved-cases) 
   (setq case-for-matching (caar retrieved-cases))
-  
+
   (format t "case-for-matching: ~A" case-for-matching)
-  
-  
+
   (setq mappings (fire::ask-it `d::(and (matchBetween
-                                     (KBCaseFn ,case-for-matching)
-                                     (KBCaseFn ,target-case-name)
-                           (TheSet) ?match)
-                           (bestMapping ?match ?mapping))
-                   :response '?mapping))
-  
+                                         (KBCaseFn ,case-for-matching)
+                                         (KBCaseFn ,target-case-name)
+                                         (TheSet) ?match)
+                                        (bestMapping ?match ?mapping))
+                               :response '?mapping))
+
   (format t "mappings: ~A" mappings)
-  
   (setq mapping1 (car mappings))
-  
+
   (setq cis (fire::ask-it `(d::and (d::candidateInferenceOf ?ci ,mapping1)
-                                (d::candidateInferenceContent ?ci ?content))
-              :response '?content))
-  
+                                   (d::candidateInferenceContent ?ci ?content))
+                          :response '?content))
   (format t "cis: ~A" cis)
   cis
-)
+  )
+
+(defun run-target-pipeline ()
+  (setq sme-facts (run-target-pipeline1))
+  (setq retrieved-cases (run-target-pipeline2 sme-facts))
+  (setq cis (run-target-pipeline3 retrieved-cases))
+  cis
+  )
 
 (defun run-train-pipeline ()
   """ building the case from N subsketches in an opened sk file """
